@@ -19,7 +19,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Gunnar Jessee 7/1/23
+ * 
+ * active: at the current moment this code is not functional due to 
+ * ScheduleExecutorService class not functional in the minecraft runtime. 
+ */
+
 public class PlantDropEventListener {
+    // ScheduledExecutorService to be remove and replaced.
+    // TODO: Add a time checked when a entity loads into the world and see if its plantable. 
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     public void initialize() {
         ServerEntityEvents.ENTITY_LOAD.register(((entity, world) -> {
