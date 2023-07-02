@@ -24,14 +24,13 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Gunnar Jessee 7/1/23
- * 
- * active: at the current moment this code is not functional due to 
- * ScheduleExecutorService class not functional in the minecraft runtime. 
+ * active: this code turns oak saplings into diamonds after 4 seconds of tick time.
+ * TODO: saplings will check if they are plantable
+ * TODO: check to see if this causes performance issues over time
  */
 
 public class PlantDropEventListener {
-    // ScheduledExecutorService to be remove and replaced.
-    // TODO: Add a time checked when a entity loads into the world and see if its plantable. 
+
     public void initialize() {
         ServerEntityEvents.ENTITY_LOAD.register(((entity, world) -> {
 
