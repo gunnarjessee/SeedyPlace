@@ -8,6 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.SaplingBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -30,6 +31,7 @@ import java.util.concurrent.TimeUnit;
  * active: this code turns oak saplings into planted oak saplings after 4 seconds of tick time.
  * TODO: generalize the planting process and do all plants
  * TODO: check to see if this causes performance issues over time
+ * TODO: fix item stack issues with their items combining to one item stack then the entire stack get destroyed
  */
 
 public class PlantDropEventListener {
@@ -41,7 +43,7 @@ public class PlantDropEventListener {
             if (entity instanceof ItemEntity) {
                 ItemEntity itemEntity = (ItemEntity) entity;
 
-                if (itemEntity.getStack().getItem() == Items.OAK_SAPLING) {
+                if (isSapling(itemEntity)) {
 
                     ServerTickEvents.START_SERVER_TICK.register(server -> {
 
@@ -50,7 +52,8 @@ public class PlantDropEventListener {
                             if (canPlantSapling(world, entityPos)) {
                                 // Plant the sapling
                                 entity.remove(Entity.RemovalReason.DISCARDED);
-                                world.setBlockState(new BlockPos(entityPos), Blocks.OAK_SAPLING.getDefaultState());
+
+                                world.setBlockState(new BlockPos(entityPos), getBlock(itemEntity.getStack()).getDefaultState());
                             }
 
                         }
@@ -65,6 +68,38 @@ public class PlantDropEventListener {
         }));
     }
 
+    private Block getBlock(ItemStack itemStack) {
+        if (itemStack.getItem() instanceof BlockItem) {
+            BlockItem blockItem = (BlockItem) itemStack.getItem();
+            return blockItem.getBlock();
+        }
+        return null;
+    }
+
+    // this requires dirt or grass block
+    private boolean isSapling(ItemEntity itemEntity) {
+
+        Item[] saplings = {Items.OAK_SAPLING, Items.BIRCH_SAPLING, Items.DARK_OAK_SAPLING, Items.ACACIA_SAPLING, Items.SPRUCE_SAPLING, Items.MANGROVE_PROPAGULE};
+        for (Item sapling: saplings) {
+            if (itemEntity.getStack().getItem() == sapling){
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
+    private boolean isPlant(ItemEntity itemEntity) {
+
+        Item[] crops = {Items.WHEAT_SEEDS, Items.BEETROOT_SEEDS, Items.CARROT, Items.POTATO, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS};
+        for (Item crop: crops) {
+            if (itemEntity.getStack().getItem() == crop) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private boolean canPlantSapling(World world, Vec3d position) {
         BlockPos blockPos = new BlockPos(position.x, position.y, position.z);
