@@ -38,6 +38,7 @@ public class PlantDropEventListener {
 
                 // checks to see if itemEntity is a valid sapling
                 if (isSapling(itemEntity) && itemEntity.getStack().getCount() > 0) {
+                    ServerTickEvents.START_SERVER_TICK.register(server -> {
                         if (entity.age >= 20 * 4 && entity.isAlive() && itemEntity.getStack().getCount() > 0) {
                             Vec3d entityPos = new Vec3d(entity.getX(), entity.getY(), entity.getZ());
                             if (canPlantSapling(world, entityPos)) {
@@ -46,11 +47,12 @@ public class PlantDropEventListener {
                                 world.setBlockState(new BlockPos(entityPos), getBlock(itemEntity.getStack()).getDefaultState());
                             }
                         }
-
+                    });
                 }
 
                 // checks to see if itemEntity is a valid crop
                 if (isCrop(itemEntity) && itemEntity.getStack().getCount() > 0) {
+                    ServerTickEvents.START_SERVER_TICK.register(server -> {
                         System.out.println("Found plant attempting to place");
                         if (entity.age >= 20 * 4 && entity.isAlive()) {
                             Vec3d entityPos = new Vec3d(entity.getX(), entity.getY(), entity.getZ());
@@ -60,6 +62,7 @@ public class PlantDropEventListener {
                                 world.setBlockState(new BlockPos(entityPos), getBlock(itemEntity.getStack()).getDefaultState());
                             }
                         }
+                    });
                 }
 
 
