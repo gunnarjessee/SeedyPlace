@@ -59,7 +59,7 @@ public class PlantDropEventListener {
                             if (canPlantCrop(world, entityPos)) {
                                 // Plant the sapling
                                 entity.remove(Entity.RemovalReason.DISCARDED);
-                                world.setBlockState(new BlockPos(entityPos), getBlock(itemEntity.getStack()).getDefaultState());
+                                world.setBlockState(new BlockPos(entityPos), getBlock(itemEntity.getStack()).getDefaultState(), 3);
                             }
                         }
                     });
@@ -80,7 +80,7 @@ public class PlantDropEventListener {
 
     // this requires dirt or grass block
     private boolean isSapling(ItemEntity itemEntity) {
-        Item[] saplings = {Items.OAK_SAPLING, Items.BIRCH_SAPLING, Items.DARK_OAK_SAPLING, Items.ACACIA_SAPLING, Items.SPRUCE_SAPLING, Items.MANGROVE_PROPAGULE};
+        Item[] saplings = {Items.OAK_SAPLING, Items.BIRCH_SAPLING, Items.DARK_OAK_SAPLING, Items.ACACIA_SAPLING, Items.SPRUCE_SAPLING, Items.MANGROVE_PROPAGULE, Items.JUNGLE_SAPLING};
         for (Item sapling: saplings) {
             if (itemEntity.getStack().getItem() == sapling){
                 return true;
@@ -95,7 +95,6 @@ public class PlantDropEventListener {
         Item[] crops = {Items.WHEAT_SEEDS, Items.BEETROOT_SEEDS, Items.CARROT, Items.POTATO, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS};
         for (Item crop: crops) {
             if (itemEntity.getStack().getItem() == crop) {
-                System.out.println("Is a crop");
                 return true;
             }
         }
@@ -107,7 +106,7 @@ public class PlantDropEventListener {
         BlockState groundState = world.getBlockState(blockPos.down());
         Block groundBlock = groundState.getBlock();
 
-        if (groundBlock == Blocks.FARMLAND) {
+        if (groundBlock == Blocks.FARMLAND ) {
             return world.isAir(blockPos);
         }
 
