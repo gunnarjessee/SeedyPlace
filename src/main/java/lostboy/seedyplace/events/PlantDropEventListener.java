@@ -11,7 +11,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 
@@ -39,11 +38,11 @@ public class PlantDropEventListener {
                 if (isSapling(itemEntity) && itemCount == 1) {
                     ServerTickEvents.START_SERVER_TICK.register(server -> {
                         if (entity.age >= 20 * 4 && entity.isAlive() && itemEntity.getStack().getCount() > 0) {
-                            Vec3d entityPos = new Vec3d(entity.getX(), entity.getY(), entity.getZ());
-                            if (canPlantSapling(world, entityPos)) {
+                            BlockPos blockPos = new BlockPos(itemEntity.getBlockX(), itemEntity.getBlockY(), itemEntity.getBlockZ());
+                            if (canPlantSapling(world, blockPos)) {
                                 // Plant the sapling
                                 entity.remove(Entity.RemovalReason.DISCARDED);
-                                world.setBlockState(new BlockPos(entityPos), getBlock(itemEntity.getStack()).getDefaultState());
+                                world.setBlockState(blockPos, getBlock(itemEntity.getStack()).getDefaultState());
                             }
                         }
                     });
@@ -53,11 +52,11 @@ public class PlantDropEventListener {
                 if (isCrop(itemEntity) && itemCount == 1) {
                     ServerTickEvents.START_SERVER_TICK.register(server -> {
                         if (entity.age >= 20 * 4 && entity.isAlive()) {
-                            Vec3d entityPos = new Vec3d(entity.getX(), entity.getY(), entity.getZ());
-                            if (canPlantCrop(world, entityPos)) {
+                            BlockPos blockPos = new BlockPos(itemEntity.getBlockX(), itemEntity.getBlockY(), itemEntity.getBlockZ());
+                            if (canPlantCrop(world, blockPos)) {
                                 // Plant the sapling
                                 entity.remove(Entity.RemovalReason.DISCARDED);
-                                world.setBlockState(new BlockPos(entityPos).up(), getBlock(itemEntity.getStack()).getDefaultState(), 3);
+                                world.setBlockState(blockPos.up(), getBlock(itemEntity.getStack()).getDefaultState(), 3);
                             }
                         }
                     });
@@ -99,8 +98,7 @@ public class PlantDropEventListener {
         return false;
     }
 
-    private boolean canPlantCrop(World world, Vec3d position) {
-        BlockPos blockPos = new BlockPos(position.x, position.y, position.z);
+    private boolean canPlantCrop(World world, BlockPos blockPos) {
         BlockState groundState = world.getBlockState(blockPos);
         Block groundBlock = groundState.getBlock();
 
@@ -111,8 +109,7 @@ public class PlantDropEventListener {
         return false;
     }
 
-    private boolean canPlantSapling(World world, Vec3d position) {
-        BlockPos blockPos = new BlockPos(position.x, position.y, position.z);
+    private boolean canPlantSapling(World world, BlockPos blockPos) {
         BlockState groundState = world.getBlockState(blockPos.down());
         Block groundBlock = groundState.getBlock();
 
