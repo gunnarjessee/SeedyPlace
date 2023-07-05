@@ -6,10 +6,12 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -70,11 +72,22 @@ public class PlantDropEventListener {
 
                 // Cactus and sugarcane needs their own special handling
                 if (getBlock(itemEntity.getStack()) == Blocks.CACTUS && itemCount == 1) {
-                    System.out.println("Is a cactus attempting to calc");
                     ServerTickEvents.START_SERVER_TICK.register(server -> {
                         if (itemEntity.age >= tickTimer && itemEntity.isAlive()) {
                             BlockPos blockPos = new BlockPos(itemEntity.getBlockX(), itemEntity.getBlockY(), itemEntity.getBlockZ());
                             if (canPlantCactus(world, blockPos)) {
+                                itemEntity.remove(Entity.RemovalReason.DISCARDED);
+                                world.setBlockState(blockPos, getBlock(itemEntity.getStack()).getDefaultState());
+                            }
+                        }
+                    });
+                }
+
+                if (itemEntity.getStack().getItem() == Items.SUGAR_CANE && itemCount == 1) {
+                    ServerTickEvents.START_SERVER_TICK.register(server -> {
+                        if (itemEntity.age >= tickTimer && itemEntity.isAlive()) {
+                            BlockPos blockPos = new BlockPos(itemEntity.getBlockX(), itemEntity.getBlockY(), itemEntity.getBlockZ());
+                            if (canPlaceSugarCane(world, blockPos)) {
                                 itemEntity.remove(Entity.RemovalReason.DISCARDED);
                                 world.setBlockState(blockPos, getBlock(itemEntity.getStack()).getDefaultState());
                             }
@@ -106,6 +119,29 @@ public class PlantDropEventListener {
         return false;
     }
 
+    // Checks to see if water is a neighbor of the base block
+    private boolean hasWaterNeighbor(World world, BlockPos blockPos) {
+        BlockPos groundBlock = blockPos.down();
+        boolean north = world.getBlockState(groundBlock.north()).getFluidState().getFluid() == Fluids.WATER? true : false;
+        boolean south = world.getBlockState(groundBlock.south()).getFluidState().getFluid() == Fluids.WATER? true : false;
+        boolean east = world.getBlockState(groundBlock.east()).getFluidState().getFluid() == Fluids.WATER? true : false;
+        boolean west = world.getBlockState(groundBlock.west()).getFluidState().getFluid() == Fluids.WATER? true : false;
+        if (north || west || south || east) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean canPlaceSugarCane(World world, BlockPos blockPos) {
+        BlockState groundState = world.getBlockState(blockPos.down());
+        Block ground = groundState.getBlock();
+        if (hasWaterNeighbor(world, blockPos)) {
+            if (ground == Blocks.DIRT || ground == Blocks.GRASS_BLOCK || ground == Blocks.SAND) {
+                return world.isAir(blockPos);
+            }
+        }
+        return false;
+    }
     // checks to see if itemEntity is a valid crop
     private boolean isCrop(ItemEntity itemEntity) {
 
