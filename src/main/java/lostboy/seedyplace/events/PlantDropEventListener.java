@@ -77,9 +77,12 @@ public class PlantDropEventListener {
         return null;
     }
 
+
+
     // this requires dirt or grass block
     private boolean isSapling(ItemEntity itemEntity) {
-        Item[] saplings = {Items.OAK_SAPLING, Items.DARK_OAK_SAPLING, Items.ACACIA_SAPLING, Items.SPRUCE_SAPLING, Items.MANGROVE_PROPAGULE, Items.JUNGLE_SAPLING};
+        Item[] saplings = {Items.OAK_SAPLING, Items.DARK_OAK_SAPLING, Items.ACACIA_SAPLING, Items.SPRUCE_SAPLING, Items.MANGROVE_PROPAGULE, Items.JUNGLE_SAPLING,
+                        Items.BAMBOO, Items.WITHER_ROSE};
         for (Item sapling: saplings) {
             if (itemEntity.getStack().getItem() == sapling){
                 return true;
