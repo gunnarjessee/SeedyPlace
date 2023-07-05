@@ -28,6 +28,8 @@ public class PlantDropEventListener {
     BUG: if player picks up item, it still tries to attempt to plant it even tho the item stack is empty
      */
 
+    private int tickTimer = 20 * 4;
+
     public void initialize() {
         ServerEntityEvents.ENTITY_LOAD.register(((entity, world) -> {
 
@@ -39,7 +41,7 @@ public class PlantDropEventListener {
                 // checks to see if itemEntity is a valid sapling
                 if (isSapling(itemEntity) && itemCount == 1) {
                     ServerTickEvents.START_SERVER_TICK.register(server -> {
-                        if (itemEntity.age >= 20 * 4 && itemEntity.isAlive() && itemEntity.getStack().getCount() > 0) {
+                        if (itemEntity.age >= tickTimer && itemEntity.isAlive() && itemEntity.getStack().getCount() > 0) {
                             BlockPos blockPos = new BlockPos(itemEntity.getBlockX(), itemEntity.getBlockY(), itemEntity.getBlockZ());
 
                             if (canPlantSapling(world, blockPos)) {
@@ -54,7 +56,7 @@ public class PlantDropEventListener {
                 // checks to see if itemEntity is a valid crop
                 if (isCrop(itemEntity) && itemCount == 1) {
                     ServerTickEvents.START_SERVER_TICK.register(server -> {
-                        if (itemEntity.age >= 20 * 4 && itemEntity.isAlive()) {
+                        if (itemEntity.age >= tickTimer && itemEntity.isAlive()) {
                             BlockPos blockPos = new BlockPos(itemEntity.getBlockX(), itemEntity.getBlockY(), itemEntity.getBlockZ());
 
                             if (canPlantCrop(world, blockPos)) {
@@ -66,6 +68,19 @@ public class PlantDropEventListener {
                     });
                 }
 
+                // Cactus and sugarcane needs their own special handling
+                if (getBlock(itemEntity.getStack()) == Blocks.CACTUS && itemCount == 1) {
+                    System.out.println("Is a cactus attempting to calc");
+                    ServerTickEvents.START_SERVER_TICK.register(server -> {
+                        if (itemEntity.age >= tickTimer && itemEntity.isAlive()) {
+                            BlockPos blockPos = new BlockPos(itemEntity.getBlockX(), itemEntity.getBlockY(), itemEntity.getBlockZ());
+                            if (canPlantCactus(world, blockPos)) {
+                                itemEntity.remove(Entity.RemovalReason.DISCARDED);
+                                world.setBlockState(blockPos, getBlock(itemEntity.getStack()).getDefaultState());
+                            }
+                        }
+                    });
+                }
 
             }
         }));
@@ -112,6 +127,29 @@ public class PlantDropEventListener {
         }
 
         return false;
+    }
+
+    // Checks to see if sand able to plant in the spot of the entity
+    private boolean canPlantCactus(World world, BlockPos blockPos) {
+        BlockState groundState = world.getBlockState(blockPos.down());
+        Block groundBlock = groundState.getBlock();
+        if (groundBlock == Blocks.SAND && isNeighborsEmpty(world, blockPos)) {
+            return world.isAir(blockPos);
+        }
+        return false;
+    }
+
+    // Only used for cactus
+    private boolean isNeighborsEmpty(World world, BlockPos blockPos) {
+        boolean north = world.getBlockState(blockPos.north()).isAir();
+        boolean south = world.getBlockState(blockPos.south()).isAir();
+        boolean east = world.getBlockState(blockPos.east()).isAir();
+        boolean west = world.getBlockState(blockPos.west()).isAir();
+        if (north && south && west && east) {
+            return true;
+        }
+        return false;
+
     }
 
     private boolean canPlantSapling(World world, BlockPos blockPos) {
