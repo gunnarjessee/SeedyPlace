@@ -17,8 +17,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 
 /**
  * Gunnar Jessee 7/1/23
- * active: this code turns oak saplings into planted oak saplings after 4 seconds of tick time.
- * TODO: generalize the planting process and do all plants
  * TODO: check to see if this causes performance issues over time
  * TODO: fix item stack issues with their items combining to one item stack then the entire stack get destroyed
  */
@@ -35,9 +33,10 @@ public class PlantDropEventListener {
 
             if (entity instanceof ItemEntity) {
                 ItemEntity itemEntity = (ItemEntity) entity;
+                int itemCount = itemEntity.getStack().getCount();
 
                 // checks to see if itemEntity is a valid sapling
-                if (isSapling(itemEntity) && itemEntity.getStack().getCount() > 0) {
+                if (isSapling(itemEntity) && itemCount == 1) {
                     ServerTickEvents.START_SERVER_TICK.register(server -> {
                         if (entity.age >= 20 * 4 && entity.isAlive() && itemEntity.getStack().getCount() > 0) {
                             Vec3d entityPos = new Vec3d(entity.getX(), entity.getY(), entity.getZ());
@@ -51,7 +50,7 @@ public class PlantDropEventListener {
                 }
 
                 // checks to see if itemEntity is a valid crop
-                if (isCrop(itemEntity) && itemEntity.getStack().getCount() > 0) {
+                if (isCrop(itemEntity) && itemCount == 1) {
                     ServerTickEvents.START_SERVER_TICK.register(server -> {
                         if (entity.age >= 20 * 4 && entity.isAlive()) {
                             Vec3d entityPos = new Vec3d(entity.getX(), entity.getY(), entity.getZ());
