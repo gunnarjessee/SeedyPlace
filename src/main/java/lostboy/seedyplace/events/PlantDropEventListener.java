@@ -53,13 +53,12 @@ public class PlantDropEventListener {
                 // checks to see if itemEntity is a valid crop
                 if (isCrop(itemEntity) && itemEntity.getStack().getCount() > 0) {
                     ServerTickEvents.START_SERVER_TICK.register(server -> {
-                        System.out.println("Found plant attempting to place");
                         if (entity.age >= 20 * 4 && entity.isAlive()) {
                             Vec3d entityPos = new Vec3d(entity.getX(), entity.getY(), entity.getZ());
                             if (canPlantCrop(world, entityPos)) {
                                 // Plant the sapling
                                 entity.remove(Entity.RemovalReason.DISCARDED);
-                                world.setBlockState(new BlockPos(entityPos), getBlock(itemEntity.getStack()).getDefaultState(), 3);
+                                world.setBlockState(new BlockPos(entityPos).up(), getBlock(itemEntity.getStack()).getDefaultState(), 3);
                             }
                         }
                     });
@@ -80,7 +79,7 @@ public class PlantDropEventListener {
 
     // this requires dirt or grass block
     private boolean isSapling(ItemEntity itemEntity) {
-        Item[] saplings = {Items.OAK_SAPLING, Items.BIRCH_SAPLING, Items.DARK_OAK_SAPLING, Items.ACACIA_SAPLING, Items.SPRUCE_SAPLING, Items.MANGROVE_PROPAGULE, Items.JUNGLE_SAPLING};
+        Item[] saplings = {Items.OAK_SAPLING, Items.DARK_OAK_SAPLING, Items.ACACIA_SAPLING, Items.SPRUCE_SAPLING, Items.MANGROVE_PROPAGULE, Items.JUNGLE_SAPLING};
         for (Item sapling: saplings) {
             if (itemEntity.getStack().getItem() == sapling){
                 return true;
@@ -103,11 +102,11 @@ public class PlantDropEventListener {
 
     private boolean canPlantCrop(World world, Vec3d position) {
         BlockPos blockPos = new BlockPos(position.x, position.y, position.z);
-        BlockState groundState = world.getBlockState(blockPos.down());
+        BlockState groundState = world.getBlockState(blockPos);
         Block groundBlock = groundState.getBlock();
 
         if (groundBlock == Blocks.FARMLAND ) {
-            return world.isAir(blockPos);
+            return world.isAir(blockPos.up());
         }
 
         return false;
