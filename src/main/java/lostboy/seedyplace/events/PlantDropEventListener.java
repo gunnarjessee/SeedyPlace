@@ -26,6 +26,8 @@ public class PlantDropEventListener {
     BUG: if player picks up item, it still tries to attempt to plant it even tho the item stack is empty
      */
 
+    private int tickTime = 4 * 20;
+
     public void initialize() {
         ServerEntityEvents.ENTITY_LOAD.register(((entity, world) -> {
 
@@ -37,7 +39,7 @@ public class PlantDropEventListener {
                 // checks to see if itemEntity is a valid sapling
                 if (isSapling(itemEntity) && itemCount == 1) {
                     ServerTickEvents.START_SERVER_TICK.register(server -> {
-                        if (entity.age >= 20 * 4 && entity.isAlive() && itemEntity.getStack().getCount() > 0) {
+                        if (entity.age >= tickTime && entity.isAlive() && itemEntity.getStack().getCount() > 0) {
                             BlockPos blockPos = new BlockPos(itemEntity.getBlockX(), itemEntity.getBlockY(), itemEntity.getBlockZ());
                             if (canPlantSapling(world, blockPos)) {
                                 // Plant the sapling
@@ -51,7 +53,7 @@ public class PlantDropEventListener {
                 // checks to see if itemEntity is a valid crop
                 if (isCrop(itemEntity) && itemCount == 1) {
                     ServerTickEvents.START_SERVER_TICK.register(server -> {
-                        if (entity.age >= 20 * 4 && entity.isAlive()) {
+                        if (entity.age >= tickTime && entity.isAlive()) {
                             BlockPos blockPos = new BlockPos(itemEntity.getBlockX(), itemEntity.getBlockY(), itemEntity.getBlockZ());
                             if (canPlantCrop(world, blockPos)) {
                                 // Plant the sapling
