@@ -39,12 +39,13 @@ public class PlantDropEventListener {
                 // checks to see if itemEntity is a valid sapling
                 if (isSapling(itemEntity) && itemCount == 1) {
                     ServerTickEvents.START_SERVER_TICK.register(server -> {
-                        if (entity.age >= 20 * 4 && entity.isAlive() && itemEntity.getStack().getCount() > 0) {
-                            Vec3i entityPos = new Vec3i((int)entity.getX(),(int) entity.getY(),(int) entity.getZ());
-                            if (canPlantSapling(world, entityPos)) {
+                        if (itemEntity.age >= 20 * 4 && itemEntity.isAlive() && itemEntity.getStack().getCount() > 0) {
+                            BlockPos blockPos = new BlockPos(itemEntity.getBlockX(), itemEntity.getBlockY(), itemEntity.getBlockZ());
+
+                            if (canPlantSapling(world, blockPos)) {
                                 // Plant the sapling
-                                entity.remove(Entity.RemovalReason.DISCARDED);
-                                world.setBlockState(new BlockPos(entityPos), getBlock(itemEntity.getStack()).getDefaultState());
+                                itemEntity.remove(Entity.RemovalReason.DISCARDED);
+                                world.setBlockState(blockPos, getBlock(itemEntity.getStack()).getDefaultState());
                             }
                         }
                     });
@@ -53,12 +54,13 @@ public class PlantDropEventListener {
                 // checks to see if itemEntity is a valid crop
                 if (isCrop(itemEntity) && itemCount == 1) {
                     ServerTickEvents.START_SERVER_TICK.register(server -> {
-                        if (entity.age >= 20 * 4 && entity.isAlive()) {
-                            Vec3i entityPos = new Vec3i((int)entity.getX(), (int)entity.getY(), (int) entity.getZ());
-                            if (canPlantCrop(world, entityPos)) {
+                        if (itemEntity.age >= 20 * 4 && itemEntity.isAlive()) {
+                            BlockPos blockPos = new BlockPos(itemEntity.getBlockX(), itemEntity.getBlockY(), itemEntity.getBlockZ());
+
+                            if (canPlantCrop(world, blockPos)) {
                                 // Plant the sapling
-                                entity.remove(Entity.RemovalReason.DISCARDED);
-                                world.setBlockState(new BlockPos(entityPos).up(), getBlock(itemEntity.getStack()).getDefaultState(), 3);
+                                itemEntity.remove(Entity.RemovalReason.DISCARDED);
+                                world.setBlockState(blockPos.up(), getBlock(itemEntity.getStack()).getDefaultState(), 3);
                             }
                         }
                     });
@@ -79,7 +81,8 @@ public class PlantDropEventListener {
 
     // this requires dirt or grass block
     private boolean isSapling(ItemEntity itemEntity) {
-        Item[] saplings = {Items.OAK_SAPLING, Items.DARK_OAK_SAPLING, Items.ACACIA_SAPLING, Items.SPRUCE_SAPLING, Items.MANGROVE_PROPAGULE, Items.JUNGLE_SAPLING};
+        Item[] saplings = {Items.OAK_SAPLING, Items.DARK_OAK_SAPLING, Items.ACACIA_SAPLING, Items.SPRUCE_SAPLING, Items.MANGROVE_PROPAGULE,
+                           Items.JUNGLE_SAPLING, Items.CHERRY_SAPLING, Items.BAMBOO};
         for (Item sapling: saplings) {
             if (itemEntity.getStack().getItem() == sapling){
                 return true;
@@ -100,8 +103,7 @@ public class PlantDropEventListener {
         return false;
     }
 
-    private boolean canPlantCrop(World world, Vec3i position) {
-        BlockPos blockPos = new BlockPos(position.getX(), position.getY(), position.getZ());
+    private boolean canPlantCrop(World world, BlockPos blockPos) {
         BlockState groundState = world.getBlockState(blockPos);
         Block groundBlock = groundState.getBlock();
 
@@ -112,8 +114,7 @@ public class PlantDropEventListener {
         return false;
     }
 
-    private boolean canPlantSapling(World world, Vec3i position) {
-        BlockPos blockPos = new BlockPos(position.getX(), position.getY(), position.getZ());
+    private boolean canPlantSapling(World world, BlockPos blockPos) {
         BlockState groundState = world.getBlockState(blockPos.down());
         Block groundBlock = groundState.getBlock();
 
