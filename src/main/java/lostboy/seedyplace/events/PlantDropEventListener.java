@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 
@@ -39,7 +40,7 @@ public class PlantDropEventListener {
                 if (isSapling(itemEntity) && itemCount == 1) {
                     ServerTickEvents.START_SERVER_TICK.register(server -> {
                         if (entity.age >= 20 * 4 && entity.isAlive() && itemEntity.getStack().getCount() > 0) {
-                            Vec3d entityPos = new Vec3d(entity.getX(), entity.getY(), entity.getZ());
+                            Vec3i entityPos = new Vec3i((int)entity.getX(),(int) entity.getY(),(int) entity.getZ());
                             if (canPlantSapling(world, entityPos)) {
                                 // Plant the sapling
                                 entity.remove(Entity.RemovalReason.DISCARDED);
@@ -53,7 +54,7 @@ public class PlantDropEventListener {
                 if (isCrop(itemEntity) && itemCount == 1) {
                     ServerTickEvents.START_SERVER_TICK.register(server -> {
                         if (entity.age >= 20 * 4 && entity.isAlive()) {
-                            Vec3d entityPos = new Vec3d(entity.getX(), entity.getY(), entity.getZ());
+                            Vec3i entityPos = new Vec3i((int)entity.getX(), (int)entity.getY(), (int) entity.getZ());
                             if (canPlantCrop(world, entityPos)) {
                                 // Plant the sapling
                                 entity.remove(Entity.RemovalReason.DISCARDED);
@@ -99,8 +100,8 @@ public class PlantDropEventListener {
         return false;
     }
 
-    private boolean canPlantCrop(World world, Vec3d position) {
-        BlockPos blockPos = new BlockPos(position.x, position.y, position.z);
+    private boolean canPlantCrop(World world, Vec3i position) {
+        BlockPos blockPos = new BlockPos(position.getX(), position.getY(), position.getZ());
         BlockState groundState = world.getBlockState(blockPos);
         Block groundBlock = groundState.getBlock();
 
@@ -111,8 +112,8 @@ public class PlantDropEventListener {
         return false;
     }
 
-    private boolean canPlantSapling(World world, Vec3d position) {
-        BlockPos blockPos = new BlockPos(position.x, position.y, position.z);
+    private boolean canPlantSapling(World world, Vec3i position) {
+        BlockPos blockPos = new BlockPos(position.getX(), position.getY(), position.getZ());
         BlockState groundState = world.getBlockState(blockPos.down());
         Block groundBlock = groundState.getBlock();
 
