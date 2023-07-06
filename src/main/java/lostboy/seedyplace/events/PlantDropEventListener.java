@@ -82,7 +82,7 @@ public class PlantDropEventListener {
     // this requires dirt or grass block
     private boolean isSapling(ItemEntity itemEntity) {
         Item[] saplings = {Items.OAK_SAPLING, Items.DARK_OAK_SAPLING, Items.ACACIA_SAPLING, Items.SPRUCE_SAPLING, Items.MANGROVE_PROPAGULE, Items.JUNGLE_SAPLING,
-                        Items.BAMBOO, Items.WITHER_ROSE};
+                        Items.BAMBOO, Items.WITHER_ROSE, Items.BIRCH_SAPLING};
         for (Item sapling: saplings) {
             if (itemEntity.getStack().getItem() == sapling){
                 return true;
@@ -118,7 +118,15 @@ public class PlantDropEventListener {
         BlockState groundState = world.getBlockState(blockPos.down());
         Block groundBlock = groundState.getBlock();
 
-        if (groundBlock == Blocks.GRASS_BLOCK || groundBlock == Blocks.DIRT) {
+        boolean isGrass = (groundBlock == Blocks.GRASS_BLOCK) ? true : false;
+        boolean isPODZOL = (groundBlock == Blocks.PODZOL) ? true : false;
+        boolean isMycelium = (groundBlock == Blocks.MYCELIUM) ? true : false;
+        boolean isRootedDirt = (groundBlock == Blocks.ROOTED_DIRT) ? true : false;
+        boolean isDirt = (groundBlock == Blocks.DIRT) ? true : false;
+        boolean isMud = (groundBlock == Blocks.MUD) ? true : false;
+        boolean isCourseDirt = (groundBlock == Blocks.MUD) ? true : false;
+
+        if (isGrass || isPODZOL || isMud || isMycelium || isRootedDirt || isDirt || isCourseDirt) {
             // Ensure the block above is air for sapling placement
             return world.isAir(blockPos);
         }
