@@ -124,7 +124,7 @@ public class PlantDropEventListener {
         boolean isRootedDirt = (groundBlock == Blocks.ROOTED_DIRT) ? true : false;
         boolean isDirt = (groundBlock == Blocks.DIRT) ? true : false;
         boolean isMud = (groundBlock == Blocks.MUD) ? true : false;
-        boolean isCourseDirt = (groundBlock == Blocks.MUD) ? true : false;
+        boolean isCourseDirt = (groundBlock == Blocks.COARSE_DIRT) ? true : false;
 
         if (isGrass || isPODZOL || isMud || isMycelium || isRootedDirt || isDirt || isCourseDirt) {
             // Ensure the block above is air for sapling placement
